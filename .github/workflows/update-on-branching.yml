@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - 'main' # Ignore pushes to the main branch, adjust as needed
 
+
 jobs:
   update-kanban:
     runs-on: ubuntu-latest
