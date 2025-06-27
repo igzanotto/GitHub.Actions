@@ -1,0 +1,30 @@
+name: Update Kanban Board on Branch Creation
+
+on:
+  push:
+    branches-ignore:
+      - 'main' # Ignore pushes to the main branch, adjust as needed
+
+jobs:
+  update-kanban:
+    runs-on: ubuntu-latest
+    if: github.event.push.created # Only run when a new branch is created
+    steps:
+      - name: Extract issue number from branch name
+        id: extract
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const branchName = context.payload.ref.replace('refs/heads/', '');
+            const parts = branchName.split('-');
+            const issueNumber = parts[parts.length - 1];
+            return issueNumber;
+          result-encoding: string
+
+      - name: Move project card to "In Progress"
+        uses: peter-evans/create-or-update-project-card@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          project-name: 'Your Kanban Board Name' # Replace with your project board name
+          column-name: 'In Progress'
+          issue-number: ${{ steps.extract.outputs.result }}
